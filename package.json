@@ -1,21 +1,34 @@
 {
   "name": "dental-appointment",
   "version": "1.0.0",
-  "description": "SmileCare Dental AI Assistant Backend",
-  "main": "app.js",
+  "description": "Dental Appointment Booking Agent — VAPI webhook backend with multi-turn conversation, Firestore persistence, Google Calendar booking, and Twilio SMS",
+  "main": "server.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "node --watch app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "echo \"No tests configured\" && exit 0"
   },
-  "keywords": [],
+  "keywords": [
+    "dental",
+    "appointment",
+    "vapi",
+    "voice-ai",
+    "booking",
+    "google-calendar",
+    "twilio",
+    "firestore"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "type": "commonjs",
   "dependencies": {
+    "chrono-node": "^2.9.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "morgan": "^1.11.0"
+    "firebase-admin": "^14.1.0",
+    "googleapis": "^173.0.0",
+    "morgan": "^1.11.0",
+    "twilio": "^6.0.2"
   }
 }
