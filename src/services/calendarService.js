@@ -53,10 +53,36 @@ Phone: ${booking.phone || "N/A"}`,
 
   const calendarId = process.env.GOOGLE_CALENDAR_ID;
 
-  const response = await calendar.events.insert({
-    calendarId,
-    resource: event,
-  });
+  console.log("Creating Google Calendar event...");
+  console.log("  Calendar ID:", calendarId || "primary (default)");
+  console.log("  Booking:", JSON.stringify({
+    patientName: booking.patientName,
+    service: booking.service,
+    dateTime: booking.dateTime,
+    phone: booking.phone || "N/A",
+  }));
+
+  let response;
+  try {
+    response = await calendar.events.insert({
+      calendarId,
+      resource: event,
+    });
+  } catch (err) {
+    console.error("Calendar event creation FAILED");
+    console.error("  error.message:", err.message);
+    console.error("  error.code:", err.code);
+    console.error("  error.stack:", err.stack);
+    if (err.response) {
+      console.error("  error.response.status:", err.response.status);
+      console.error("  error.response.data:", JSON.stringify(err.response.data, null, 2));
+    }
+    throw err;
+  }
+
+  console.log("Calendar event created successfully");
+  console.log("  Google Event ID:", response.data.id);
+  console.log("  Event URL:", response.data.htmlLink);
 
   return {
     googleEventId: response.data.id,
