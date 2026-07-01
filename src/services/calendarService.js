@@ -30,8 +30,20 @@ async function createCalendarEvent(booking) {
     auth,
   });
 
-  const startTime = new Date(booking.dateTime);
-  const endTime = new Date(startTime.getTime() + 60 * 60 * 1000);
+  // booking.dateTime comes from chrono.toISOString() as "YYYY-MM-DDTHH:MM:SS.000Z".
+  // chrono interprets times in the server's local timezone. On Railway (UTC),
+  // "3 PM" becomes 15:00 UTC — the same numerical hour as the intended IST time.
+  // To tell Google Calendar the correct local time, we replace the "Z" (UTC)
+  // with "+05:30" (Asia/Kolkata offset), so the time components are received
+  // directly as IST local time rather than being converted from UTC.
+  const startDateTime = booking.dateTime.replace(/\.\d{3}Z$/, "+05:30");
+
+  const [startDatePart, rest] = startDateTime.split("T");
+  const timePart = rest.split("+")[0];
+  const [h, m, s] = timePart.split(":").map(Number);
+
+  // End time: 1 hour later (appointments are 10 AM–7 PM, no midnight crossover)
+  const endDateTime = `${startDatePart}T${String(h + 1).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}+05:30`;
 
   const event = {
     summary: `Dental Appointment - ${booking.service}`,
@@ -39,11 +51,11 @@ async function createCalendarEvent(booking) {
 Service: ${booking.service}
 Phone: ${booking.phone || "N/A"}`,
     start: {
-      dateTime: startTime.toISOString(),
+      dateTime: startDateTime,
       timeZone: "Asia/Kolkata",
     },
     end: {
-      dateTime: endTime.toISOString(),
+      dateTime: endDateTime,
       timeZone: "Asia/Kolkata",
     },
     reminders: {
